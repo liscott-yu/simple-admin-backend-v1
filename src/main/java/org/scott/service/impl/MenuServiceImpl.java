@@ -1,4 +1,4 @@
-package org.scott.service.Impl;
+package org.scott.service.impl;
 
 
 import cn.hutool.core.collection.CollectionUtil;

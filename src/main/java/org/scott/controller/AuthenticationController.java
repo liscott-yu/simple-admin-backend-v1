@@ -12,6 +12,7 @@ import org.scott.service.dto.AuthUserDto;
 import org.scott.service.dto.JwtUserDto;
 import org.scott.utils.RedisUtils;
 import org.scott.utils.RsaUtils;
+import org.scott.utils.SecurityUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -40,6 +41,12 @@ public class AuthenticationController {
 
     private final RedisUtils redisUtils;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+
+    @Operation(summary = "获取当前登录用户信息")
+    @GetMapping(value = "/info")
+    public ResponseEntity<Object> getUserInfo() {
+        return ResponseEntity.ok(SecurityUtils.getCurrentUser());
+    }
 
     /**
      * 用户登录
