@@ -33,12 +33,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
+    @Operation(summary = "按用户名查询用户")
     @Override
     public UserDto findByName(String userName) {
         User user = userRepository.findByUsername(userName);
         return userMapper.toDto(user);
     }
 
+    @Operation(summary = "查询所有用户")
     @Override
     public Object queryAll(UserQueryCriteria userQueryCriteria, Pageable pageable) {
         //这里findall方法的第一个参数是Specification，
@@ -108,14 +110,22 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Operation(summary = "根据用户ID查询用户")
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public UserDto findById(Long id) {
-        return null;
+        User user = userRepository.findById(id).orElseGet(User::new);
+        // 校验非空
+        ValidationUtils.isNull(user.getId(), "User", "id", id);
+        // user -> userDto
+        return userMapper.toDto(user);
     }
 
+    @Operation(summary = "删除用户")
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void delete(Set<Long> ids) {
-
+        userRepository.deleteAllById(ids);
     }
 
 }

@@ -19,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -62,6 +63,35 @@ public class UserController {
         userService.update(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @Operation(summary = "删除用户")
+    @DeleteMapping
+    @PreAuthorize("hasAnyAuthority('user:del', 'admin')")
+    public ResponseEntity<Object> deleteUser(@RequestBody Set<Long> ids) {
+        // userId -> roleSmallDto -> level 当前用户角色等级
+        Integer currentLevel = Collections.min(roleService.findByUsersId(SecurityUtils.getCurrentUserId())
+                .stream().map(RoleSmallDto::getLevel).collect(Collectors.toList()));
+        for (Long id : ids) {
+            // 根据id校验当前用户角色级别是否高于要删除的用户的角色
+            checkLevelById(id, currentLevel);
+        }
+        userService.delete(ids);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * 如果当前用户的角色级别低于创建用户的角色级别，则抛出权限不足的错误
+     * @param id ID
+     */
+    private void checkLevelById(Long id, Integer currentLevel) {
+        Integer optLevel = Collections.min(roleService.findByUsersId(id).stream()
+                .map(RoleSmallDto::getLevel).collect(Collectors.toList()));
+        if (optLevel < currentLevel) {
+            throw new BadRequestException(CommonConstant.MSG_INSUFFICIENT_AUTHORITY
+                    + ",无法删除： " + userService.findById(id).getUsername());
+        }
+    }
+
     /**
      * 如果当前用户的角色级别低于创建用户的角色级别，则抛出权限不足的错误
      * @param resources User
@@ -74,7 +104,8 @@ public class UserController {
         Integer optLevel = roleService.findByRoles(resources.getRoles());
         // level 1 是最高级别，数值越大级别越低
         if (currentLevel > optLevel) {
-            throw new BadRequestException(CommonConstant.MSG_INSUFFICIENT_AUTHORITY);
+            throw new BadRequestException(CommonConstant.MSG_INSUFFICIENT_AUTHORITY
+            + "，无法删除： " + resources.getUsername());
         }
     }
 
