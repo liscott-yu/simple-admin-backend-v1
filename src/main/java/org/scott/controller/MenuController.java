@@ -30,9 +30,14 @@ public class MenuController {
 
     @GetMapping(value = "/build")
     @Operation(summary = "获取前端所需菜单")
-    public ResponseEntity<Object> buildMenues() {
-        List<MenuDto> menuDtoList = menuService.findByUser(SecurityUtils.getCurrentUserId());
+    public ResponseEntity<Object> buildMenus() {
+        // 获取当前登录用户的id
+        Long id = SecurityUtils.getCurrentUserId();
+        // 获取当前登录用户能看到的菜单列表，非树形列表
+        List<MenuDto> menuDtoList = menuService.findByUser(id);
+        // 把获取的菜单列表转化成树形菜单列表
         List<MenuDto> menuDtos = menuService.buildTree(menuDtoList);
+        // Dto -> vo
         return new ResponseEntity<>(menuService.buildMenus(menuDtos), HttpStatus.OK);
     }
 }

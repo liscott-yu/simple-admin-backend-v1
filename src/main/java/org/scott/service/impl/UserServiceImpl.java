@@ -5,11 +5,15 @@ import org.scott.domain.User;
 import org.scott.repository.UserRepository;
 import org.scott.service.UserService;
 import org.scott.service.dto.UserDto;
+import org.scott.service.dto.UserQueryCriteria;
 import org.scott.service.mapstruct.UserMapper;
 import org.scott.utils.PageUtils;
+import org.scott.utils.QueryHelp;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 /**
  * project name  simple-admin-backedv1
@@ -31,8 +35,38 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Object queryAll(Pageable pageable) {
-        Page<User> pages = userRepository.findAll(pageable);
-        return PageUtils.toPage(pages.map(userMapper::toDto));
+    public Object queryAll(UserQueryCriteria userQueryCriteria, Pageable pageable) {
+        //这里findall方法的第一个参数是Specification，Specification是一个函数式接口，因为他只有一个抽象方法:toPredicate()，所以可以用lambda表达式去表示函数式接口
+        Page<User> page = userRepository.findAll(
+                (root, query, cb) -> QueryHelp.getPredicate(root, userQueryCriteria, cb), pageable);
+        //以上代码等价于以下代码：
+//        Page<User> page = userRepository.findAll(new Specification<User>() {
+//            @Override
+//            public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+//                return QueryHelp.getPredicate(root, query, criteriaBuilder);
+//            }
+//        }, pageable);
+        return PageUtils.toPage(page.map(userMapper::toDto));
     }
+
+    @Override
+    public void create(User resources) {
+
+    }
+
+    @Override
+    public void update(User resources) throws Exception {
+
+    }
+
+    @Override
+    public UserDto findById(Long id) {
+        return null;
+    }
+
+    @Override
+    public void delete(Set<Long> ids) {
+
+    }
+
 }
