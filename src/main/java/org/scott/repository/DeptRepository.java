@@ -4,6 +4,7 @@ import org.scott.domain.Dept;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Set;
@@ -15,6 +16,7 @@ import java.util.Set;
  * @date 2023/2/22 13:27
  * description  TODO
  */
+@Repository
 public interface DeptRepository extends JpaRepository<Dept, Long>, JpaSpecificationExecutor<Dept>  {
     /**
      * 根据 PID 查询 部门列表

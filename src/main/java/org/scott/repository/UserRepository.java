@@ -22,4 +22,17 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
      * @return User
      */
     User findByUsername(String username);
+    /**
+     * 根据邮件查询 User
+     * @param email 邮件
+     * @return User
+     */
+    User findByEmail(String email);
+
+    /**
+     * 根据手机号查询 User
+     * @param phone 手机号
+     * @return User
+     */
+    User findByPhone(String phone);
 }

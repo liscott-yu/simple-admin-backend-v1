@@ -4,6 +4,7 @@ import org.scott.domain.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.Set;
 
@@ -14,6 +15,7 @@ import java.util.Set;
  * @date 2023/1/5 14:32
  * description  TODO
  */
+@Repository
 public interface RoleRepository extends JpaRepository<Role, Long>, JpaSpecificationExecutor<Role> {
     /**
      * 根据用户ID查询角色集合

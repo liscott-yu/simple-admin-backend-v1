@@ -6,12 +6,18 @@ import org.scott.domain.Menu;
 import org.scott.domain.Role;
 import org.scott.repository.RoleRepository;
 import org.scott.service.RoleService;
+import org.scott.service.dto.RoleDto;
 import org.scott.service.dto.UserDto;
 import org.scott.service.dto.small.RoleSmallDto;
+import org.scott.service.mapstruct.RoleMapper;
 import org.scott.service.mapstruct.RoleSmallMapper;
+import org.scott.utils.ValidationUtils;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,6 +34,7 @@ public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
     private final RoleSmallMapper roleSmallMapper;
+    private final RoleMapper roleMapper;
 
 
     @Override
@@ -61,5 +68,33 @@ public class RoleServiceImpl implements RoleService {
         // List (string -> SimpleGrantedAuthority)
         return permissions.stream().map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Integer findByRoles(Set<Role> roles) {
+        if (roles.size() == 0) {
+            return Integer.MAX_VALUE;
+        }
+        // role -> roleDto -> Integer
+        Set<RoleDto> roleDtos = new HashSet<>();
+        for (Role role : roles) {
+            roleDtos.add(findById(role.getId()));
+        }
+        return Collections.min(
+                roleDtos.stream().map(RoleDto::getLevel).collect(Collectors.toList()));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public RoleDto findById(Long id) {
+        Role role = roleRepository.findById(id).orElseGet(Role::new);
+        ValidationUtils.isNull(role.getId(), "Role", "id", id);
+        return roleMapper.toDto(role);
+    }
+
+    @Override
+    public List<RoleDto> queryAll() {
+        Sort sort = Sort.by(Sort.Direction.ASC, "level");
+        return roleMapper.toDto(roleRepository.findAll(sort));
     }
 }

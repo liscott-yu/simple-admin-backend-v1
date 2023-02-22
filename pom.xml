@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.scott</groupId>
-    <artifactId>simple-admin-backed v1</artifactId>
+    <artifactId>simple-admin-backendv1</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>simple-admin-backed v1</name>
     <description>Demo project for Spring Boot</description>
@@ -100,12 +100,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        <!--加密和解密，如Base64-->
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.15</version>
         </dependency>
         <!--mapStruct依赖-->
         <dependency>
