@@ -39,14 +39,14 @@ public class UserController {
 
     @Operation(summary = "查询用户")
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('user:list', 'admin')")
+    @PreAuthorize("@el.check('user:list')")
     public ResponseEntity<Object> queryUser(UserQueryCriteria userQueryCriteria, Pageable pageable) {
         return new ResponseEntity<>(userService.queryAll(userQueryCriteria, pageable), HttpStatus.OK);
     }
 
     @Operation(summary = "新增用户")
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('user:add', 'admin')")
+    @PreAuthorize("@el.check('user:add')")
     public ResponseEntity<Object> createUser(@Validated @RequestBody User resources) {
         checkLevel(resources);
         String password = resources.getPassword() == null ? CommonConstant.DEFAULT_PASSWORD : resources.getPassword();
@@ -57,7 +57,7 @@ public class UserController {
 
     @Operation(summary = "修改用户")
     @PutMapping
-    @PreAuthorize("hasAnyAuthority('user:edit', 'admin')")
+    @PreAuthorize("@el.check('user:edit')")
     public ResponseEntity<Object> updateUser(@Validated (User.Update.class) @RequestBody User resources) throws Exception {
         checkLevel(resources);
         userService.update(resources);
@@ -66,7 +66,7 @@ public class UserController {
 
     @Operation(summary = "删除用户")
     @DeleteMapping
-    @PreAuthorize("hasAnyAuthority('user:del', 'admin')")
+    @PreAuthorize("@el.check('user:del')")
     public ResponseEntity<Object> deleteUser(@RequestBody Set<Long> ids) {
         // userId -> roleSmallDto -> level 当前用户角色等级
         Integer currentLevel = Collections.min(roleService.findByUsersId(SecurityUtils.getCurrentUserId())

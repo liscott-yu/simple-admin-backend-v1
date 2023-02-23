@@ -6,8 +6,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.scott.config.RsaProperties;
+import org.scott.config.SecurityProperties;
+import org.scott.config.jwt.TokenProvider;
 import org.scott.constant.CaptchaConstant;
 import org.scott.constant.CommonConstant;
+import org.scott.service.OnlineUserService;
 import org.scott.service.dto.AuthUserDto;
 import org.scott.service.dto.JwtUserDto;
 import org.scott.utils.RedisUtils;
@@ -41,6 +44,10 @@ public class AuthenticationController {
 
     private final RedisUtils redisUtils;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+
+    private final SecurityProperties properties;
+    private final TokenProvider tokenProvider;
+    private final OnlineUserService onlineUserService;
 
     @Operation(summary = "获取当前登录用户信息")
     @GetMapping(value = "/info")
@@ -81,13 +88,16 @@ public class AuthenticationController {
         // 4.通过已经认证的Authentication返回UserDetails
         final JwtUserDto jwtUserDto = (JwtUserDto) authentication.getPrincipal();
 
+        // 生成token, 保存在线信息
+        String jwt = tokenProvider.createToken(authentication);
+        onlineUserService.save(jwtUserDto, jwt, request);
+
         // 返回JwtUserDto和token给前端
         Map<String, Object> authInfo = new HashMap<String, Object>(CommonConstant.MAP_INIT_CAPACITY) {{
             put("user", jwtUserDto);
-            put("token", "token");
+            put("token", properties.getTokenStartWith() + jwt);
         }};
 
-        // 已通过验证码验证
         return ResponseEntity.ok(authInfo);
     }
 
@@ -115,7 +125,7 @@ public class AuthenticationController {
     }
 
     /**
-     *
+     * 带前缀的去掉"-"的uuid
      * @return 带前缀的去掉"-"的uuid
      */
     private String getUuidWithPrefix() {
