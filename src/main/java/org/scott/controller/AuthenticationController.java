@@ -16,6 +16,7 @@ import org.scott.service.dto.JwtUserDto;
 import org.scott.utils.RedisUtils;
 import org.scott.utils.RsaUtils;
 import org.scott.utils.SecurityUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -99,6 +100,13 @@ public class AuthenticationController {
         }};
 
         return ResponseEntity.ok(authInfo);
+    }
+
+    @Operation(summary = "退出登录")
+    @DeleteMapping(value = "/logout")
+    public ResponseEntity<Object> logout(HttpServletRequest request) {
+        onlineUserService.logout(tokenProvider.getToken(request));
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
