@@ -38,14 +38,13 @@ import java.util.List;
 public class SpringFoxSwaggerConfig {
     /**
      * 配置基本信息
-     * @return
+     * @return /
      */
     @Bean
     public ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("Swagger Test App Restful API")
                 .description("swagger test app restful api")
-                .termsOfServiceUrl("https://github.com/geekxingyun")
                 .contact(new Contact("swagger3","https://swagger3","liscott@outlook.com"))
                 .version("1.0")
                 .build();
@@ -53,16 +52,14 @@ public class SpringFoxSwaggerConfig {
 
     /**
      * 配置文档生成最佳实践
-     * @param apiInfo
-     * @return
+     * @return /
      */
     @Bean
-    public Docket createRestApi(ApiInfo apiInfo) {
+    public Docket createRestApi() {
         return new Docket(DocumentationType.OAS_30)
-                .apiInfo(apiInfo)
-                .groupName("SwaggerGroupOneAPI")
+                .apiInfo(apiInfo()).enable(true)
                 .select()
-                .apis(RequestHandlerSelectors.withClassAnnotation(RestController.class))
+                .apis(RequestHandlerSelectors.basePackage("org.scott.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }

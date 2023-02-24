@@ -4,8 +4,10 @@ import org.scott.utils.SpringContextHolder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import springfox.documentation.oas.annotations.EnableOpenApi;
 
 @SpringBootApplication
+@EnableOpenApi
 public class SimpleAdminBackendv1Application {
 
     public static void main(String[] args) {

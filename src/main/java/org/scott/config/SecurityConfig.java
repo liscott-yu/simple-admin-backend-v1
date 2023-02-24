@@ -31,6 +31,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final TokenProvider tokenProvider;
     private final SecurityProperties securityProperties;
     private final OnlineUserService onlineUserService;
+    // 过滤白名单
+    private static final String[] AUTH_WHITELIST = {
+            "/authenticate",
+            "/swagger-resources/**",
+            "/swagger-ui/**",
+            "/v3/api-docs",
+            "/webjars/**"
+    };
+
 
     @Bean
     PasswordEncoder getPasswordEncoder() {
@@ -39,7 +48,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().antMatchers("/auth/login").permitAll()
+        http.authorizeRequests()
+                // 添加过滤白名单
+                .antMatchers(AUTH_WHITELIST).permitAll()
+                .antMatchers("/auth/login").permitAll()
                 .antMatchers("/auth/code").permitAll()
                 // 放行OPTIONS请求，放行了才能把status放到data里面
                 .antMatchers(HttpMethod.OPTIONS, "/*").permitAll()

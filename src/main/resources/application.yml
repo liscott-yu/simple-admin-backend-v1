@@ -11,6 +11,13 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
 
+  #Spring Data Redis - 无法安全地识别存储库候选接口的存储分配
+  #要禁用在 application.properties 中设置为 false 的 redis 存储库：
+  data:
+    redis:
+      repositories:
+        enabled: false
+
   # DataSource Config
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -40,6 +47,11 @@ spring:
         # 连接池最小空闲连接数
         min-idle: 0
 
+    # pring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering.
+    # Explicitly configure spring.jpa.open-in-view to disable this warning
+  jpa:
+    open-in-view: false
+
 #jwt
 jwt:
   header: Authorization
@@ -64,3 +76,5 @@ management:
     web:
       exposure:
         include: "*"
+swagger:
+  enable: true
